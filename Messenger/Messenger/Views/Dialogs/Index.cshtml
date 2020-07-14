@@ -1,0 +1,58 @@
+﻿@model List<ShortDialogModel>
+
+@{
+	ViewData["Title"] = "Dialogs";
+}
+
+<h1>Список кластеров</h1>
+<a asp-action="Create">Создать диалог</a>
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				Название
+			</th>
+			<th>
+				Участники диалога
+			</th>
+			<th>
+				Колиество непрочитанных сообщений
+			</th>
+			<th>
+				Дата создания диалога
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>@item.Name</td>
+				<td>@foreach (var name in item.Participants) {
+					<p>@name</p>
+				}</td>
+				<td>@item.NumberUnread</td>
+				<td>@item.CreatedAt.ToLocalTime().ToShortDateString()</td>
+				<td>
+					<a asp-action="Details" asp-route-id="@item.Uuid" onclick="StatusIsRead('@item.Uuid')">Перейти к диалогу</a>|
+					@if(item.IsCreator)
+					{
+						<a asp-action="Edit" asp-route-id="@item.Uuid">Изменить</a>
+					}
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+<script>
+	function StatusIsRead(uuid) {
+		$.post({
+			url: 'Dialogs/StatusIsRead/'+ uuid,
+			data: {
+			},
+			dataType: 'json',
+			success: function (data) {
+			}
+		});
+	};</script>

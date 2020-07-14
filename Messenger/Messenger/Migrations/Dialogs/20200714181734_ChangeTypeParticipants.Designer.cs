@@ -4,15 +4,17 @@ using System.Collections.Generic;
 using Messenger.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Messenger.Migrations.Dialogs
 {
     [DbContext(typeof(DialogsContext))]
-    partial class DialogsContextModelSnapshot : ModelSnapshot
+    [Migration("20200714181734_ChangeTypeParticipants")]
+    partial class ChangeTypeParticipants
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

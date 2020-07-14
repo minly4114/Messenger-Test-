@@ -50,6 +50,8 @@ namespace Messenger
 
             services.Configure<AuthMessageSenderOptions>(Configuration.GetSection("AuthMessageSenderOptions"));
             services.AddTransient<IEmailSender, EmailSender>()
+                .AddScoped<IUserProvider,UserProvider>()
+                .AddScoped<IDialogProvider, DialogProvider>()
                 .AddSingleton<ILog4netProvider, Log4netProvider>(); 
 
             services.AddScoped(typeof(IDbSetProvider<>), typeof(DbSetProvider<>));
