@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Messenger.Data;
+using Messenger.Data.IProviders;
+using Messenger.Data.Providers;
 using Messenger.EmailAdapters;
+using Messenger.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -15,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Messenger
 {
@@ -33,7 +33,8 @@ namespace Messenger
             var connection = Configuration.GetConnectionString("DefaultConnection");
 
             services.AddDbContext<PostgresContext>(options => options.UseNpgsql(connection));
-            
+            services.AddDbContext<DialogsContext>(options => options.UseNpgsql(connection));
+
             services.AddDefaultIdentity<IdentityUser>(
                 options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
@@ -47,15 +48,19 @@ namespace Messenger
             });
             services.AddHttpClient();
 
-            services.AddTransient<IEmailSender, EmailSender>();
             services.Configure<AuthMessageSenderOptions>(Configuration.GetSection("AuthMessageSenderOptions"));
+            services.AddTransient<IEmailSender, EmailSender>()
+                .AddSingleton<ILog4netProvider, Log4netProvider>(); 
+
+            services.AddScoped(typeof(IDbSetProvider<>), typeof(DbSetProvider<>));
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, PostgresContext context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, PostgresContext context, DialogsContext dialogsContext, ILog4netProvider log4Net, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddLog4Net();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -88,7 +93,15 @@ namespace Messenger
             }
             catch (Exception ex)
             {
-                //log4Net.Error(typeof(Startup).ToString(), ex.Message, ex.StackTrace);
+                log4Net.Error(typeof(Startup).ToString(), ex.Message, ex.StackTrace);
+            }
+            try
+            {
+                dialogsContext.Database.Migrate();
+            }
+            catch (Exception ex)
+            {
+                log4Net.Error(typeof(Startup).ToString(), ex.Message, ex.StackTrace);
             }
         }
     }
