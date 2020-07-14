@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Messenger.Data;
+using Messenger.EmailAdapters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -45,7 +46,10 @@ namespace Messenger
                 config.Filters.Add(new AuthorizeFilter(policy));
             });
             services.AddHttpClient();
-            //services.AddControllersWithViews();
+
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.Configure<AuthMessageSenderOptions>(Configuration.GetSection("AuthMessageSenderOptions"));
+
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 
