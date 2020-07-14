@@ -68,5 +68,16 @@ namespace Messenger.Data.Entities
             };
             return outcome;
         }
+
+        public EditDialogModel ToEditDialog(IUserProvider userProvider)
+        {
+            var outcome = new EditDialogModel()
+            {
+                Name = Name,
+                Creator = Creator,
+                Participants = Participants.ToList().ConvertAll(x => userProvider.GetUser(Guid.Parse(x))),
+            };
+            return outcome;
+        }
     }
 }

@@ -56,44 +56,32 @@ namespace Messenger.Controllers
         }
 
         // GET: DialogsController/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(string id)
         {
-            return View();
+            return View(_dialogProvider.GetDialogForEdit(Guid.Parse(id)));
         }
 
         // POST: DialogsController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(string id, EditDialogModel model)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var status = _dialogProvider.ChangeDialog(Guid.Parse(id), model);
+                if (status.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    return View(model);
+                }
+                
             }
             catch
             {
-                return View();
-            }
-        }
-
-        // GET: DialogsController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: DialogsController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
+                return View(model);
             }
         }
 

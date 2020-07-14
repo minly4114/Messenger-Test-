@@ -4,6 +4,7 @@ using Messenger.HelperEntities;
 using Messenger.Logging;
 using Messenger.Models;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace Messenger.Data.Providers
             _dialogsProvider = dialogsProvider.Build(context.Dialogs, context);
         }
 
-        public StatusExecution ChangeDialog(Guid uuid, CreateDialogModel crDialog)
+        public StatusExecution ChangeDialog(Guid uuid, EditDialogModel edDialog)
         {
             var dialog = _dialogsProvider.GetQueryable().FirstOrDefault(x => x.Uuid == uuid);
             if (dialog == null)
@@ -37,7 +38,7 @@ namespace Messenger.Data.Providers
                     Message = "Диалога не существует"
                 };
             }
-            if (dialog.Creator != crDialog.Creator)
+            if (dialog.Creator != edDialog.Creator)
             {
                 return new StatusExecution()
                 {
@@ -45,8 +46,9 @@ namespace Messenger.Data.Providers
                     Message = "Данный пользователь не может изменить диалог"
                 };
             }
-            dialog.Name = crDialog.Name;
-            dialog.Participants = crDialog.Participants.ConvertAll(x => _userProvider.GetUser(x).Uuid);
+            dialog.Name = edDialog.Name;
+            edDialog.EmailParticipants.RemoveAll(x => x == null);
+            dialog.Participants = edDialog.EmailParticipants.ConvertAll(x => _userProvider.GetUser(x).Uuid);
             try
             {
                 _dialogsProvider.UpdateAsync(dialog).Wait();
@@ -97,6 +99,12 @@ namespace Messenger.Data.Providers
         public DialogDetailsModel GetDialog(Guid uuidDialog, Guid uuidUser)
         {
             var dialog = _dialogsProvider.GetQueryable().Include(x => x.Messages).FirstOrDefault(x => x.Uuid == uuidDialog).ToDialogDetails(_userProvider, uuidUser);
+            return dialog;
+        }
+
+        public EditDialogModel GetDialogForEdit(Guid uuidDialog)
+        {
+            var dialog = _dialogsProvider.GetQueryable().FirstOrDefault(x => x.Uuid == uuidDialog).ToEditDialog(_userProvider);
             return dialog;
         }
 

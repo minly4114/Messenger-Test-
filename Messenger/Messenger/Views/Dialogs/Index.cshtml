@@ -34,10 +34,11 @@
 				<td>@item.NumberUnread</td>
 				<td>@item.CreatedAt.ToLocalTime().ToShortDateString()</td>
 				<td>
-					<a asp-action="Details" asp-route-id="@item.Uuid" onclick="StatusIsRead('@item.Uuid')">Перейти к диалогу</a>|
+					<a asp-action="Details" asp-route-id="@item.Uuid" onclick="StatusIsRead('@item.Uuid')">Перейти к диалогу</a>
 					@if(item.IsCreator)
 					{
-						<a asp-action="Edit" asp-route-id="@item.Uuid">Изменить</a>
+
+						<a asp-action="Edit" asp-route-id="@item.Uuid"> | Изменить</a>
 					}
 				</td>
 			</tr>
