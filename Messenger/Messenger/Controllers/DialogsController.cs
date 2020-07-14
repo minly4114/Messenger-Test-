@@ -58,7 +58,7 @@ namespace Messenger.Controllers
         // GET: DialogsController/Edit/5
         public ActionResult Edit(string id)
         {
-            return View(_dialogProvider.GetDialogForEdit(Guid.Parse(id)));
+            return View(_dialogProvider.GetDialogForEdit(Guid.Parse(id), Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))));
         }
 
         // POST: DialogsController/Edit/5

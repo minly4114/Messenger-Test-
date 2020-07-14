@@ -12,7 +12,7 @@
 		<div class="row">
 			<div class="col-md-5">
 				<div class="row">
-					<a asp-action="Edit" asp-controller="Dialogs">Изменить конфигурацию диалога</a>
+					<a asp-action="Edit" asp-controller="Dialogs" asp-route-id="@Model.Uuid">Изменить конфигурацию диалога</a>
 				</div>
 				<label>Участники диалога</label>
 				@foreach (var item in Model.Participants)

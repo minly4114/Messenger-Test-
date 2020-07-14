@@ -49,6 +49,7 @@ namespace Messenger.Data.Providers
             dialog.Name = edDialog.Name;
             edDialog.EmailParticipants.RemoveAll(x => x == null);
             dialog.Participants = edDialog.EmailParticipants.ConvertAll(x => _userProvider.GetUser(x).Uuid);
+            dialog.Participants.Add(edDialog.Creator.ToString());
             try
             {
                 _dialogsProvider.UpdateAsync(dialog).Wait();
@@ -102,9 +103,10 @@ namespace Messenger.Data.Providers
             return dialog;
         }
 
-        public EditDialogModel GetDialogForEdit(Guid uuidDialog)
+        public EditDialogModel GetDialogForEdit(Guid uuidDialog, Guid uuidCreator)
         {
             var dialog = _dialogsProvider.GetQueryable().FirstOrDefault(x => x.Uuid == uuidDialog).ToEditDialog(_userProvider);
+            dialog.Participants.RemoveAll(x => x.Uuid == uuidCreator.ToString());
             return dialog;
         }
 
