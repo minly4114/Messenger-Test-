@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Messenger.Data.IProviders;
 using Messenger.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Messenger.Controllers
@@ -26,9 +22,10 @@ namespace Messenger.Controllers
         }
 
         // GET: DialogsController/Details/5
-        public ActionResult Details(string id)
+        public ActionResult Details(string id,[FromQuery] string currentMessage)
         {
             var result =_dialogProvider.GetDialog(Guid.Parse(id), Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)));
+            result.CurentMessage = currentMessage;
             return View(result);
         }
 

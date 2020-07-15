@@ -10,8 +10,9 @@ namespace Messenger.Models
         public Guid Uuid { get; set; }
         public string Name { get; set; }
         public List<MessageModel> Messages { get; set; }
-        public Guid Creator { get; set; }
+        public bool IsCreator { get; set; }
         public List<ParticipantModel> Participants { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string CurentMessage { get; set; }
     }
 }

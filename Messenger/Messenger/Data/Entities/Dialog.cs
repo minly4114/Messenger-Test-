@@ -64,7 +64,7 @@ namespace Messenger.Data.Entities
                 Uuid = Uuid,
                 Participants = Participants.ToList().ConvertAll(x => userProvider.GetUser(Guid.Parse(x))),
                 Messages = Messages.ConvertAll(x => x.ToMessageModel(userProvider, user)),
-                Creator = Creator
+                IsCreator = Creator == user
             };
             return outcome;
         }
